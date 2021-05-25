@@ -298,29 +298,12 @@ module Praha
 
     -- * List
     -- | Re-exported from "Data.List":
-  , (Data.List.++)
-  , Data.List.break
-  , Data.List.drop
-  , Data.List.dropWhile
-  , Data.List.filter
-  , Data.List.lookup
-  , Data.List.map
-  , Data.List.replicate
-  , Data.List.reverse
-  , Data.List.span
-  , Data.List.take
-  , Data.List.takeWhile
   , Data.List.zip
   , Data.List.zipWith
-
 
     -- * @String@
     -- | Re-exported from "Data.String":
   , Data.String.fromString
-  , Data.String.lines
-  , Data.String.unlines
-  , Data.String.unwords
-  , Data.String.words
 
     -- ** @Show@
     -- | Re-exported from "Text.Show":
