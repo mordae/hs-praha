@@ -1,0 +1,208 @@
+-- |
+-- Module      :  Praha.Logger
+-- Copyright   :  Jan Hamal Dvořák
+-- License     :  MIT
+--
+-- Maintainer  :  mordae@anilinux.org
+-- Stability   :  unstable
+-- Portability :  non-portable (ghc)
+--
+-- This module provides the 'LoggerT' transformer and an associated
+-- 'MonadLogger' class to help you integrate your custom monad transformer
+-- stack with "System.Log.FastLogger".
+--
+-- To include it in your custom transformer stack:
+--
+-- @
+-- newtype LoggingApp a
+--   = LoggingApp
+--     { stack :: 'LoggerT' IO a
+--     }
+--   deriving (Functor, Applicative, Monad, MonadIO, 'MonadLogger')
+-- @
+--
+-- To use it afterwards:
+--
+-- @
+-- countFrobs :: LoggingApp Int
+-- countFrobs = do
+--   nfrobs \<- length \<$\> listFrobs
+--
+--   if (0 == nfrobs)
+--      then 'logWarning' [\"There are no frobs!\"]
+--      else 'logInfo' [\"There are \", 'toLogStr' nfrobs, \" frobs.\"]
+--
+--   return nfrobs
+-- @
+--
+-- To execute it with the rest of your stack:
+--
+-- @
+-- 'withFastLogger' ('LogStderr' 'defaultBufSize') \\logger ->
+--   let logFunc = 'simpleLogFunc' 'LogInfo' logger
+--    in 'runLoggerT' logFunc loggingApp
+-- @
+--
+
+module Praha.Logger
+  ( LogLevel(..)
+  , MonadLogger(..)
+  , logDebug
+  , logInfo
+  , logWarning
+  , logError
+  , LoggerT
+  , runLoggerT
+  , simpleLogFunc
+
+    -- * @fast-logger@
+    -- | Re-exported from "System.Log.FastLogger":
+  , ToLogStr
+  , toLogStr
+  )
+where
+  import Praha
+  import System.Log.FastLogger
+
+
+  -- |
+  -- Severity of an individual log message.
+  --
+  data LogLevel
+    = LogDebug
+    | LogInfo
+    | LogWarning
+    | LogError
+    deriving (Show, Read, Eq, Ord, Enum)
+
+
+  -- |
+  -- Log strings corresponding to the individual log levels.
+  -- Used by the 'simpleLogFunc'.
+  --
+  logLevelStr :: LogLevel -> LogStr
+  logLevelStr LogDebug   = "Debug"
+  logLevelStr LogInfo    = "Info"
+  logLevelStr LogWarning = "Warning"
+  logLevelStr LogError   = "Error"
+
+
+  -- |
+  -- Class for monads equipped with "System.Log.FastLogger".
+  --
+  class (MonadIO m) => MonadLogger m where
+    -- |
+    -- Return the logging function itself.
+    --
+    askLogger :: m LogFunc
+
+    default askLogger :: (MonadTrans t, MonadLogger n, m ~ t n) => m LogFunc
+    askLogger = lift askLogger
+    {-# INLINE askLogger #-}
+
+
+  instance (MonadIO m) => MonadLogger (ReaderT LogFunc m) where
+    askLogger = ask
+
+
+  type LogFunc = LogLevel -> LogStr -> IO ()
+
+
+  -- |
+  -- Log a single message at given level.
+  --
+  logMessage :: (MonadLogger m) => LogLevel -> LogStr -> m ()
+  logMessage l s = do
+    logger <- askLogger
+    liftIO $ logger l s
+
+
+  -- |
+  -- Log a debugging message.
+  --
+  -- Example:
+  --
+  -- @
+  -- nfrobs <- frobnicateInt
+  -- logDebug ["Frobnicator counter: ", toLogStr nfrobs]
+  -- @
+  --
+  logDebug :: (MonadLogger m) => [LogStr] -> m ()
+  logDebug logStrings = logMessage LogDebug (mconcat logStrings)
+
+
+  -- |
+  -- Log an informative message.
+  --
+  logInfo :: (MonadLogger m) => [LogStr] -> m ()
+  logInfo logStrings = logMessage LogInfo (mconcat logStrings)
+
+
+  -- |
+  -- Log a warning message.
+  --
+  logWarning :: (MonadLogger m) => [LogStr] -> m ()
+  logWarning logStrings = logMessage LogWarning (mconcat logStrings)
+
+
+  -- |
+  -- Log an error message.
+  --
+  logError :: (MonadLogger m) => [LogStr] -> m ()
+  logError logStrings = logMessage LogError (mconcat logStrings)
+
+
+  -- |
+  -- The logger monad transformer, which adds logging capability to
+  -- the given monad. Makes use of 'ReaderT' under the wraps.
+  --
+  newtype (MonadIO m) => LoggerT m a
+    = LoggerT
+      { reader         :: ReaderT LogFunc m a
+      }
+    deriving ( Functor
+             , Applicative
+             , Monad
+             , MonadFix
+             , MonadFail
+             , Contravariant
+             , MonadZip
+             , Alternative
+             , MonadPlus
+             , MonadIO
+             , MonadUnliftIO
+             , MonadTrans
+             )
+
+  instance (MonadIO m) => MonadLogger (LoggerT m) where
+    askLogger = LoggerT askLogger
+
+
+  -- |
+  -- Run the logging monad transformer.
+  --
+  runLoggerT :: (MonadIO m) => LogFunc -> LoggerT m a -> m a
+  runLoggerT logFunc LoggerT{reader} = runReaderT reader logFunc
+
+
+  -- |
+  -- Creates simple log function that silences messages with
+  -- level lower than the given one and prefixes all messages
+  -- with their respective log levels.
+  --
+  -- Example:
+  --
+  -- @
+  -- 'withFastLogger' ('LogStderr' 'defaultBufSize') \logger ->
+  --   let logFunc = simpleLogFunc LogInfo logger
+  --    in runLoggerT logFunc yourLoggingAppM
+  -- @
+  --
+  simpleLogFunc :: LogLevel -> FastLogger -> LogFunc
+  simpleLogFunc limit logger level str = do
+    if level >= limit
+       then logger (logLevelStr level <> ": " <> str <> "\n")
+       else return ()
+
+
+-- vim:set ft=haskell sw=2 ts=2 et:
