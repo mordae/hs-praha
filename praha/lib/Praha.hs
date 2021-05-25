@@ -164,6 +164,7 @@ module Praha
     -- * @Semigroup@
     -- | Re-exported from "Data.Semigroup":
   , (Data.Semigroup.<>)
+  , Data.Semigroup.sconcat
 
     -- * @Monoid@
     -- | Re-exported from "Data.Monoid":
