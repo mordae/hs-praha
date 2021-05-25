@@ -198,6 +198,7 @@ module Praha
   , Control.Monad.replicateM_
   , Control.Monad.zipWithM
   , Control.Monad.zipWithM_
+  , Praha.Extra.guarded
 
     -- * @Monad@
     -- | Re-exported from "Control.Monad":
