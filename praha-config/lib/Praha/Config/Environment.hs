@@ -23,11 +23,11 @@ module Praha.Config.Environment
     EnvParam(..)
 
     -- * Working With Parameters
-  , getParam
-  , getParamMaybe
-  , getParamDefault
-  , setParam
-  , setParamDefault
+  , getConfig
+  , getConfigMaybe
+  , getConfigDefault
+  , setConfig
+  , setConfigDefault
 
     -- * Using Files
   , readFileToEnv
@@ -145,8 +145,8 @@ where
   -- |
   -- Find and parse the parameter or throw an 'userError'.
   --
-  getParam :: (MonadIO m, EnvParam a) => String -> m a
-  getParam name = do
+  getConfig :: (MonadIO m, EnvParam a) => String -> m a
+  getConfig name = do
     maybeValue <- lookupEnv name
 
     case maybeValue of
@@ -158,8 +158,8 @@ where
   -- Find and try to parse the parameter.
   -- If the parameter is not found, raise an 'userError'.
   --
-  getParamMaybe :: (MonadIO m, EnvParam a) => String -> m (Maybe a)
-  getParamMaybe name = do
+  getConfigMaybe :: (MonadIO m, EnvParam a) => String -> m (Maybe a)
+  getConfigMaybe name = do
     maybeValue <- lookupEnv name
 
     case maybeValue of
@@ -172,8 +172,8 @@ where
   -- If the parameter cannot be parsed, raise an 'userError'.
   -- If the parameter cannot be found, use the supplied default value.
   --
-  getParamDefault :: (MonadIO m, EnvParam a) => String -> a -> m a
-  getParamDefault name dfl = do
+  getConfigDefault :: (MonadIO m, EnvParam a) => String -> a -> m a
+  getConfigDefault name dfl = do
     maybeValue <- lookupEnv name
 
     case maybeValue of
@@ -191,15 +191,15 @@ where
   -- |
   -- Set given parameter.
   --
-  setParam :: (MonadIO m, EnvParam a) => String -> a -> m ()
-  setParam name value = setEnv name (showParam value)
+  setConfig :: (MonadIO m, EnvParam a) => String -> a -> m ()
+  setConfig name value = setEnv name (showParam value)
 
 
   -- |
   -- Set given parameter unless it has already been set before.
   --
-  setParamDefault :: (MonadIO m, EnvParam a) => String -> a -> m ()
-  setParamDefault name value = setEnvDefault name (showParam value)
+  setConfigDefault :: (MonadIO m, EnvParam a) => String -> a -> m ()
+  setConfigDefault name value = setEnvDefault name (showParam value)
 
 
   setEnvDefault :: (MonadIO m) => String -> String -> m ()
