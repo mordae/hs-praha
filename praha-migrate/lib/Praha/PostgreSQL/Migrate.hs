@@ -57,8 +57,8 @@ where
       withTransaction conn do
         _ <- execute conn [sql| create table if not exists ? (
                                   name varchar not null primary key,
-                                  ts timestamptz not null default now(),
-                                ) |] (Only table)
+                                  ts timestamptz not null default now()
+                                ); |] (Only table)
 
         existing <- fmap fromOnly <$>
           query conn "select name from ?" (Only table)
