@@ -51,14 +51,15 @@ where
           -> Connection
           -> m ()
   migrate table migrations conn = do
-    logInfo ["Running DB migrations:"]
-
     withRunInIO \runInIO -> do
       withTransaction conn do
-        _ <- execute conn [sql| create table if not exists ? (
+        _ <- execute conn [sql| set session client_min_messages = 'warning';
+                                create table if not exists ? (
                                   name varchar not null primary key,
                                   ts timestamptz not null default now()
-                                ); |] (Only table)
+                                );
+                                reset all;
+                              |] (Only table)
 
         existing <- fmap fromOnly <$>
           query conn "select name from ?" (Only table)
@@ -66,10 +67,10 @@ where
         for_ migrations \(name, migration) -> do
           if name `elem` existing
              then do
-               runInIO $ logInfo [" - skip: ", toLogStr name]
+               runInIO $ logDebug ["Skipping ", toLogStr name]
 
              else do
-               runInIO $ logInfo [" - exec: ", toLogStr name]
+               runInIO $ logInfo ["Running ", toLogStr name]
 
                _ <- execute conn "insert into ? (name) values (?)" (table, name)
                _ <- execute_ conn (Query migration)
