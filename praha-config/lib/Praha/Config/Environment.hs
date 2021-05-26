@@ -134,6 +134,19 @@ where
     readParam _  = Nothing
     showParam () = ""
 
+  instance EnvParam Bool where
+    readParam "true"  = Just True
+    readParam "True"  = Just True
+    readParam "yes"   = Just True
+    readParam "1"     = Just True
+    readParam "false" = Just False
+    readParam "False" = Just False
+    readParam "no"    = Just False
+    readParam "0"     = Just False
+    readParam _other  = Nothing
+    showParam True    = "True"
+    showParam False   = "False"
+
   instance (EnvParam a) => EnvParam (Maybe a) where
     readParam ""  = Just Nothing
     readParam str = Just (readParam str)
