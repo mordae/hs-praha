@@ -13,3 +13,8 @@ Re-exports large portion of `base` as well as types from `containers`, `unordere
 ## praha-logger - Monad Transformer for Logging
 
 `MonadLogger` class and a `LoggerT` monad transformer for convenient use of the `fast-logger` infrastructure.
+
+
+## praha-config: Practical Configuration Management
+
+Practical configuration management based on process environment, good enough for typical web applications.
