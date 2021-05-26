@@ -1,0 +1,55 @@
+cabal-version: 3.0
+
+name: praha-config
+version: 0.1.0.0
+homepage: https://github.com/mordae/hs-praha#readme
+bug-reports: https://github.com/mordae/hs-praha/issues
+
+license: MIT
+license-file: LICENSE
+copyright: Jan Hamal Dvořák
+maintainer: mordae@anilinux.org
+author: Jan Hamal Dvořák
+
+synopsis: Practical Configuration Management
+description:
+  Practical configuration management based on process environment,
+  good enough for typical web applications.
+
+category: System
+build-type: Simple
+extra-source-files: README.md
+
+source-repository head
+    type: git
+    location: https://github.com/mordae/hs-praha
+
+library
+    default-language: Haskell2010
+
+    default-extensions:
+        BlockArguments
+        FlexibleInstances
+        NoImplicitPrelude
+        OverloadedStrings
+
+    ghc-options:
+        -Wall
+        -Wcompat
+        -Wincomplete-uni-patterns
+        -Wincomplete-record-updates
+        -Widentities
+        -Wredundant-constraints
+
+    build-depends:
+      , base                 >=4.13 && <5
+      , unliftio             >=0.2  && <0.3
+      , praha
+
+    exposed-modules:
+        Praha.Config.Environment
+
+    hs-source-dirs: lib
+
+    ghc-options:
+        -Wunused-packages

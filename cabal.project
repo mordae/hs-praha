@@ -1,2 +1,3 @@
 packages: praha
         , praha-logger
+	, praha-config
