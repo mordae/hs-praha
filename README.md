@@ -18,3 +18,8 @@ Re-exports large portion of `base` as well as types from `containers`, `unordere
 ## praha-config: Practical Configuration Management
 
 Practical configuration management based on process environment, good enough for typical web applications.
+
+
+## praha-migrate: Practical PostgreSQL Schema Migrations
+
+Practical PostgreSQL schema migrations compatible with compile-time file embedding.
