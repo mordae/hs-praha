@@ -11,9 +11,9 @@ copyright: Jan Hamal Dvořák
 maintainer: mordae@anilinux.org
 author: Jan Hamal Dvořák
 
-synopsis: Minimalist Logging Monad
+synopsis: Practical Monad Transformer for Logging
 description:
-  Minimalist logging monad that works with any MonadIO instances.
+  Practical class and a monad transformer for logging.
 
 category: System
 build-type: Simple
