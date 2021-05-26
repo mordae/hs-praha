@@ -62,6 +62,8 @@ module Praha.Logger
   )
 where
   import Praha
+  import Praha.Config.Environment
+
   import System.Log.FastLogger
 
 
@@ -74,6 +76,18 @@ where
     | LogWarning
     | LogError
     deriving (Show, Read, Eq, Ord, Enum)
+
+  instance EnvParam LogLevel where
+    readParam "debug"   = Just LogDebug
+    readParam "info"    = Just LogInfo
+    readParam "warning" = Just LogWarning
+    readParam "error"   = Just LogError
+    readParam _other    = Nothing
+
+    showParam LogDebug   = "debug"
+    showParam LogInfo    = "info"
+    showParam LogWarning = "warning"
+    showParam LogError   = "error"
 
 
   -- |
