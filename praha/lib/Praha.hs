@@ -301,7 +301,11 @@ module Praha
   , Data.List.zip
   , Data.List.zipWith
 
-    -- * @String@
+    -- * @IsList@
+    -- | Re-exported from "GHC.Exts.fromList":
+  , GHC.Exts.fromList
+
+    -- * @IsString@
     -- | Re-exported from "Data.String":
   , Data.String.fromString
 
@@ -358,6 +362,7 @@ where
   import qualified Data.Traversable
   import qualified Data.Tuple
   import qualified Data.Word
+  import qualified GHC.Exts
   import qualified Praha.Extra
   import qualified Prelude
   import qualified Text.Read

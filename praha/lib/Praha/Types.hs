@@ -123,6 +123,11 @@ module Praha.Types
     -- | Re-exported from "Data.String":
   , Data.String.IsString
 
+    -- *** List-like
+    -- **** @IsList@
+    -- | Re-exported from "GHC.Exts.IsList":
+  , GHC.Exts.IsList
+
     -- *** Numeric
     -- | All numeric classes are re-exported from "Prelude":
 
@@ -310,6 +315,7 @@ where
   import qualified Data.Typeable
   import qualified Data.Vector
   import qualified Data.Word
+  import qualified GHC.Exts
   import qualified GHC.Generics
   import qualified GHC.Stack
   import qualified Numeric.Natural
