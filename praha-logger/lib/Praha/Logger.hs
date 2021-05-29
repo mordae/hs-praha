@@ -57,6 +57,7 @@ module Praha.Logger
 
     -- * @fast-logger@
     -- | Re-exported from "System.Log.FastLogger":
+  , LogStr
   , ToLogStr
   , toLogStr
   )
@@ -91,17 +92,6 @@ where
 
 
   -- |
-  -- Log strings corresponding to the individual log levels.
-  -- Used by the 'simpleLogFunc'.
-  --
-  logLevelStr :: LogLevel -> LogStr
-  logLevelStr LogDebug   = "Debug"
-  logLevelStr LogInfo    = "Info"
-  logLevelStr LogWarning = "Warning"
-  logLevelStr LogError   = "Error"
-
-
-  -- |
   -- Class for monads equipped with "System.Log.FastLogger".
   --
   class (MonadIO m) => MonadLogger m where
@@ -119,16 +109,16 @@ where
     askLogger = ask
 
 
-  type LogFunc = LogLevel -> LogStr -> IO ()
+  type LogFunc = LogLevel -> LogStr -> LogStr -> IO ()
 
 
   -- |
   -- Log a single message at given level.
   --
-  logMessage :: (MonadLogger m) => LogLevel -> LogStr -> m ()
-  logMessage l s = do
+  logMessage :: (MonadLogger m) => LogLevel -> LogStr -> LogStr -> m ()
+  logMessage l t s = do
     logger <- askLogger
-    liftIO $ logger l s
+    liftIO $ logger l t s
 
 
   -- |
@@ -137,33 +127,34 @@ where
   -- Example:
   --
   -- @
+  -- let tag = "frobnicator"
   -- nfrobs <- frobnicateInt
-  -- logDebug ["Frobnicator counter: ", toLogStr nfrobs]
+  -- logDebug tag ["Counter: ", toLogStr nfrobs]
   -- @
   --
-  logDebug :: (MonadLogger m) => [LogStr] -> m ()
-  logDebug logStrings = logMessage LogDebug (mconcat logStrings)
+  logDebug :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
+  logDebug tag logStrings = logMessage LogDebug tag (mconcat logStrings)
 
 
   -- |
   -- Log an informative message.
   --
-  logInfo :: (MonadLogger m) => [LogStr] -> m ()
-  logInfo logStrings = logMessage LogInfo (mconcat logStrings)
+  logInfo :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
+  logInfo tag logStrings = logMessage LogInfo tag (mconcat logStrings)
 
 
   -- |
   -- Log a warning message.
   --
-  logWarning :: (MonadLogger m) => [LogStr] -> m ()
-  logWarning logStrings = logMessage LogWarning (mconcat logStrings)
+  logWarning :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
+  logWarning tag logStrings = logMessage LogWarning tag (mconcat logStrings)
 
 
   -- |
   -- Log an error message.
   --
-  logError :: (MonadLogger m) => [LogStr] -> m ()
-  logError logStrings = logMessage LogError (mconcat logStrings)
+  logError :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
+  logError tag logStrings = logMessage LogError tag (mconcat logStrings)
 
 
   -- |
@@ -213,10 +204,21 @@ where
   -- @
   --
   simpleLogFunc :: LogLevel -> FastLogger -> LogFunc
-  simpleLogFunc limit logger level str = do
+  simpleLogFunc limit logger level tag str = do
     if level >= limit
-       then logger (logLevelStr level <> ": " <> str <> "\n")
+       then logger $ mconcat [strLevel level, " (", tag, ") ", str, "\n"]
        else return ()
+
+
+  -- |
+  -- Log strings corresponding to the individual log levels.
+  -- Used by the 'simpleLogFunc'.
+  --
+  strLevel :: LogLevel -> LogStr
+  strLevel LogDebug   = "D"
+  strLevel LogInfo    = "I"
+  strLevel LogWarning = "W"
+  strLevel LogError   = "E"
 
 
 -- vim:set ft=haskell sw=2 ts=2 et:

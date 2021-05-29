@@ -22,6 +22,11 @@ where
   import Database.PostgreSQL.Simple.Types
 
 
+  -- | Tag for logging.
+  tag :: LogStr
+  tag = "praha-migrate"
+
+
   -- |
   -- Run database migrations specified as a list of file names and their
   -- respective contents. First argument is name of the table that holds
@@ -67,10 +72,10 @@ where
         for_ migrations \(name, migration) -> do
           if name `elem` existing
              then do
-               runInIO $ logDebug ["Skipping ", toLogStr name]
+               runInIO $ logDebug tag ["Skipping ", toLogStr name]
 
              else do
-               runInIO $ logInfo ["Running ", toLogStr name]
+               runInIO $ logInfo tag ["Running ", toLogStr name]
 
                _ <- execute conn "insert into ? (name) values (?)" (table, name)
                _ <- execute_ conn (Query migration)
