@@ -325,6 +325,17 @@ module Praha
   , Control.Monad.Reader.runReader
   , Control.Monad.Reader.runReaderT
 
+    -- * @State@
+    -- | Re-exported from "Control.Monad.State":
+  , Control.Monad.State.runState
+  , Control.Monad.State.runStateT
+  , Control.Monad.State.evalState
+  , Control.Monad.State.evalStateT
+  , Control.Monad.State.execState
+  , Control.Monad.State.execStateT
+  , Control.Monad.State.modify
+  , Control.Monad.State.gets
+
     -- * @Text@
   , Praha.Extra.tshow
 
@@ -346,6 +357,7 @@ where
   import qualified Control.Monad.IO.Class
   import qualified Control.Monad.IO.Unlift
   import qualified Control.Monad.Reader
+  import qualified Control.Monad.State
   import qualified Data.Bool
   import qualified Data.Either
   import qualified Data.Eq

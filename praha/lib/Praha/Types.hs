@@ -201,6 +201,11 @@ module Praha.Types
     -- | Re-exported from "GHC.Generics":
   , GHC.Generics.Generic
 
+    -- **** @Kind@
+    -- | Re-exported from "Data.Kind":
+  , Data.Kind.Type
+  , Data.Kind.Constraint
+
     -- *** Exceptions
     -- *** @Exception@
     -- | Re-exported from "Control.Exception.Base":
@@ -219,6 +224,12 @@ module Praha.Types
     -- | Re-exported from "Control.Monad.Reader":
   , Control.Monad.Reader.Reader
   , Control.Monad.Reader.ReaderT(ReaderT)
+    -- ** @MonadState@
+  , Control.Monad.State.MonadState
+    -- ** @StateT@ (@State@)
+    -- | Re-exported from "Control.Monad.State":
+  , Control.Monad.State.State
+  , Control.Monad.State.StateT(StateT)
 
     -- * @bytestring@
     -- ** @ByteString@
@@ -281,6 +292,7 @@ where
   import qualified Control.Monad.IO.Unlift
   import qualified Control.Monad.Reader
   import qualified Control.Monad.ST
+  import qualified Control.Monad.State
   import qualified Control.Monad.Zip
   import qualified Data.Bool
   import qualified Data.ByteString (ByteString)
@@ -298,6 +310,7 @@ where
   import qualified Data.Int
   import qualified Data.IntMap.Strict
   import qualified Data.IntSet
+  import qualified Data.Kind
   import qualified Data.List.NonEmpty
   import qualified Data.Map.Strict
   import qualified Data.Maybe
