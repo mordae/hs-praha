@@ -44,7 +44,7 @@ library
     build-depends:
       , base                 >=4.13 && <5
       , unliftio             >=0.2  && <0.3
-      , praha
+      , praha                >=0.1  && <0.2
 
     exposed-modules:
         Praha.Config.Environment
