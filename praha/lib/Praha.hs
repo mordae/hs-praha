@@ -347,9 +347,20 @@ module Praha
     -- * @MonadUnliftIO@
     -- | Re-exported from "Control.Monad.IO.Unlift":
   , Control.Monad.IO.Unlift.withRunInIO
+
+    -- * @NFData@
+    -- | Re-exported from "Control.DeepSeq":
+  , Control.DeepSeq.rnf
+  , Control.DeepSeq.rnf1
+  , Control.DeepSeq.liftRnf
+  , Control.DeepSeq.deepseq
+  , Control.DeepSeq.force
+  , (Control.DeepSeq.$!!)
+  , (Control.DeepSeq.<$!!>)
   )
 where
   import Praha.Types
+  import qualified Control.DeepSeq
   import qualified Control.Applicative
   import qualified Control.Arrow
   import qualified Control.Category

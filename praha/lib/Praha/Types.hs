@@ -279,11 +279,18 @@ module Praha.Types
     -- ** @ConvertibleStrings@
     -- | Re-exported from "Data.String.Conversions":
   , Data.String.Conversions.ConvertibleStrings
+
+    -- * @deepseq*
+    -- ** @NFData@
+    -- | Re-exported from "Control.DeepSeq":
+  , Control.DeepSeq.NFData
+  , Control.DeepSeq.NFData1
   )
 where
   import qualified Control.Applicative
   import qualified Control.Arrow
   import qualified Control.Category
+  import qualified Control.DeepSeq
   import qualified Control.Exception.Base
   import qualified Control.Monad
   import qualified Control.Monad.Fail

@@ -76,7 +76,9 @@ where
     | LogInfo
     | LogWarning
     | LogError
-    deriving (Show, Read, Eq, Ord, Enum)
+    deriving (Show, Read, Eq, Ord, Enum, Generic)
+
+  instance NFData LogLevel
 
   instance EnvParam LogLevel where
     readParam "debug"   = Just LogDebug
