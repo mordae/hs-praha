@@ -28,6 +28,7 @@ library
 
     default-extensions:
         DefaultSignatures
+        DeriveGeneric
         FlexibleInstances
         GeneralizedNewtypeDeriving
         NamedFieldPuns
