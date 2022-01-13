@@ -65,6 +65,10 @@ module Praha
     -- | Re-exported from "Prelude":
   , Prelude.fromEnum
 
+    -- * @HasField@
+    -- | Re-exported from "GHC.Records":
+  , GHC.Records.getField
+
     -- * @Bounded@
     -- | Re-exported from "Prelude":
   , Prelude.minBound
@@ -386,6 +390,7 @@ where
   import qualified Data.Tuple
   import qualified Data.Word
   import qualified GHC.Exts
+  import qualified GHC.Records
   import qualified Praha.Extra
   import qualified Prelude
   import qualified Text.Read

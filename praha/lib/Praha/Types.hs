@@ -112,6 +112,10 @@ module Praha.Types
     -- | Re-exported from "Prelude":
   , Prelude.Enum
 
+    -- *** @HasField@
+    -- | Re-exported from "GHC.Records":
+  , GHC.Records.HasField
+
     -- *** Strings
     -- **** @Show@
     -- | Re-exported from "Text.Show":
@@ -337,6 +341,7 @@ where
   import qualified Data.Word
   import qualified GHC.Exts
   import qualified GHC.Generics
+  import qualified GHC.Records
   import qualified GHC.Stack
   import qualified Numeric.Natural
   import qualified Prelude
