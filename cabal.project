@@ -1,4 +1,4 @@
 packages: praha
         , praha-logger
-	, praha-config
-	, praha-migrate
+        , praha-config
+        , praha-migrate

@@ -1,62 +1,49 @@
-cabal-version: 3.0
-
-name: praha
-version: 0.1.0.0
-homepage: https://github.com/mordae/hs-praha#readme
-bug-reports: https://github.com/mordae/hs-praha/issues
-
-license: MIT
-license-file: LICENSE
-copyright: Jan Hamal Dvořák
-maintainer: mordae@anilinux.org
-author: Jan Hamal Dvořák
-
-synopsis: Minimalist prelude
+cabal-version:      3.0
+name:               praha
+version:            0.1.0.0
+license:            MIT
+license-file:       LICENSE
+copyright:          Jan Hamal Dvořák
+maintainer:         mordae@anilinux.org
+author:             Jan Hamal Dvořák
+homepage:           https://github.com/mordae/hs-praha#readme
+bug-reports:        https://github.com/mordae/hs-praha/issues
+synopsis:           Minimalist prelude
 description:
-  Praha is a minimalist prelude that tries hard not to pollute the
-  namespace or export partial functions.
+    Praha is a minimalist prelude that tries hard not to pollute the
+    namespace or export partial functions.
 
-category: Prelude
-build-type: Simple
+category:           Prelude
+build-type:         Simple
 extra-source-files: README.md
 
 source-repository head
-    type: git
+    type:     git
     location: https://github.com/mordae/hs-praha
 
 library
-    default-language: Haskell2010
-
-    default-extensions:
-        NoImplicitPrelude
-
-    ghc-options:
-        -Wall
-        -Wcompat
-        -Wincomplete-uni-patterns
-        -Wincomplete-record-updates
-        -Widentities
-        -Wredundant-constraints
-
-    build-depends:
-      , base                 >=4.13 && <5
-      , bytestring           >=0.10 && <0.11
-      , containers           >=0.6  && <0.7
-      , deepseq              >=1.4  && <1.5
-      , hashable             >=1.3  && <1.4
-      , mtl                  >=2.0  && <2.3
-      , string-conversions   >=0.4  && <0.5
-      , text                 >=1.2  && <1.3
-      , unliftio-core        >=0.2  && <0.3
-      , unordered-containers >=0.2  && <0.3
-      , vector               >=0.12 && <0.13
-
     exposed-modules:
         Praha.Types
         Praha.Extra
         Praha
 
-    hs-source-dirs: lib
-
+    hs-source-dirs:     lib
+    default-language:   Haskell2010
+    default-extensions: NoImplicitPrelude
     ghc-options:
+        -Wall -Wcompat -Wincomplete-uni-patterns
+        -Wincomplete-record-updates -Widentities -Wredundant-constraints
         -Wunused-packages
+
+    build-depends:
+        base >=4.13 && <5,
+        bytestring >=0.10,
+        containers >=0.6,
+        deepseq >=1.4,
+        hashable >=1.3,
+        mtl >=2.0,
+        string-conversions >=0.4,
+        text >=1.2,
+        unliftio-core >=0.2,
+        unordered-containers >=0.2,
+        vector >=0.12

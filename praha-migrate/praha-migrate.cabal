@@ -1,56 +1,39 @@
-cabal-version: 3.0
-
-name: praha-migrate
-version: 0.1.0.0
-homepage: https://github.com/mordae/hs-praha#readme
-bug-reports: https://github.com/mordae/hs-praha/issues
-
-license: MIT
-license-file: LICENSE
-copyright: Jan Hamal Dvořák
-maintainer: mordae@anilinux.org
-author: Jan Hamal Dvořák
-
-synopsis: Practical PostgreSQL Schema Migrations
+cabal-version:      3.0
+name:               praha-migrate
+version:            0.1.0.0
+license:            MIT
+license-file:       LICENSE
+copyright:          Jan Hamal Dvořák
+maintainer:         mordae@anilinux.org
+author:             Jan Hamal Dvořák
+homepage:           https://github.com/mordae/hs-praha#readme
+bug-reports:        https://github.com/mordae/hs-praha/issues
+synopsis:           Practical PostgreSQL Schema Migrations
 description:
-  Practical PostgreSQL schema migrations compatible with compile-time
-  file embedding.
+    Practical PostgreSQL schema migrations compatible with compile-time
+    file embedding.
 
-category: System
-build-type: Simple
+category:           System
+build-type:         Simple
 extra-source-files: README.md
 
 source-repository head
-    type: git
+    type:     git
     location: https://github.com/mordae/hs-praha
 
 library
-    default-language: Haskell2010
-
+    exposed-modules:    Praha.PostgreSQL.Migrate
+    hs-source-dirs:     lib
+    default-language:   Haskell2010
     default-extensions:
-        BlockArguments
-        NoImplicitPrelude
-        OverloadedStrings
-        QuasiQuotes
+        BlockArguments NoImplicitPrelude OverloadedStrings QuasiQuotes
 
     ghc-options:
-        -Wall
-        -Wcompat
-        -Wincomplete-uni-patterns
-        -Wincomplete-record-updates
-        -Widentities
-        -Wredundant-constraints
+        -Wall -Wcompat -Wincomplete-uni-patterns
+        -Wincomplete-record-updates -Widentities -Wredundant-constraints
+        -Wunused-packages
 
     build-depends:
-      , base                 >=4.13 && <5
-      , postgresql-simple    >=0.6  && <0.7
-      , praha                >=0.1  && <0.2
-      , praha-logger         >=0.1  && <0.2
-
-    exposed-modules:
-        Praha.PostgreSQL.Migrate
-
-    hs-source-dirs: lib
-
-    ghc-options:
-        -Wunused-packages
+        postgresql-simple >=0.6,
+        praha >=0.1 && <0.2,
+        praha-logger >=0.1 && <0.2
