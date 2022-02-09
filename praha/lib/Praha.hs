@@ -361,13 +361,17 @@ module Praha
   , Control.DeepSeq.force
   , (Control.DeepSeq.$!!)
   , (Control.DeepSeq.<$!!>)
+
+    -- * @KeyValue@
+    -- | Re-exported from "Data.KeyValue":
+  , (Data.KeyValue..=)
   )
 where
   import Praha.Types
-  import qualified Control.DeepSeq
   import qualified Control.Applicative
   import qualified Control.Arrow
   import qualified Control.Category
+  import qualified Control.DeepSeq
   import qualified Control.Monad
   import qualified Control.Monad.IO.Class
   import qualified Control.Monad.IO.Unlift
@@ -379,6 +383,7 @@ where
   import qualified Data.Foldable
   import qualified Data.Function
   import qualified Data.Functor
+  import qualified Data.KeyValue
   import qualified Data.List
   import qualified Data.Maybe
   import qualified Data.Monoid

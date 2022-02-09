@@ -2,3 +2,4 @@ packages: praha
         , praha-logger
         , praha-config
         , praha-migrate
+	, ../key-value

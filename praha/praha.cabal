@@ -46,4 +46,5 @@ library
         text >=1.2,
         unliftio-core >=0.2,
         unordered-containers >=0.2,
-        vector >=0.12
+        vector >=0.12,
+        key-value
