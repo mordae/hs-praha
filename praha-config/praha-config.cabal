@@ -24,10 +24,9 @@ source-repository head
 library
     exposed-modules:    Praha.Config.Environment
     hs-source-dirs:     lib
-    default-language:   Haskell2010
+    default-language:   GHC2021
     default-extensions:
-        BlockArguments FlexibleInstances NoImplicitPrelude
-        OverloadedStrings
+        BlockArguments NoImplicitPrelude OverloadedStrings
 
     ghc-options:
         -Wall -Wcompat -Wincomplete-uni-patterns

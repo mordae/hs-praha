@@ -163,7 +163,7 @@ where
   -- The logger monad transformer, which adds logging capability to
   -- the given monad. Makes use of 'ReaderT' under the wraps.
   --
-  newtype (MonadIO m) => LoggerT m a
+  newtype LoggerT m a
     = LoggerT
       { reader         :: ReaderT LogFunc m a
       }
@@ -188,7 +188,7 @@ where
   -- |
   -- Run the logging monad transformer.
   --
-  runLoggerT :: (MonadIO m) => LogFunc -> LoggerT m a -> m a
+  runLoggerT :: LogFunc -> LoggerT m a -> m a
   runLoggerT logFunc LoggerT{reader} = runReaderT reader logFunc
 
 

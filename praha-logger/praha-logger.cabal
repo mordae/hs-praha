@@ -21,10 +21,9 @@ source-repository head
 library
     exposed-modules:    Praha.Logger
     hs-source-dirs:     lib
-    default-language:   Haskell2010
+    default-language:   GHC2021
     default-extensions:
-        DefaultSignatures DeriveGeneric FlexibleInstances
-        GeneralizedNewtypeDeriving NamedFieldPuns NoImplicitPrelude
+        DefaultSignatures GeneralizedNewtypeDeriving NoImplicitPrelude
         OverloadedStrings TypeFamilies
 
     ghc-options:
