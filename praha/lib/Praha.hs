@@ -27,6 +27,8 @@ module Praha
   , Data.Maybe.maybeToList
   , Data.Maybe.catMaybes
   , Data.Maybe.mapMaybe
+  , Data.Maybe.isJust
+  , Data.Maybe.isNothing
 
     -- * @Either@
     -- | Re-exported from "Data.Either":
