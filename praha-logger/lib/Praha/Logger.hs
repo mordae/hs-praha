@@ -47,6 +47,7 @@
 module Praha.Logger
   ( LogLevel(..)
   , MonadLogger(..)
+  , LogFunc
   , logDebug
   , logInfo
   , logWarning
