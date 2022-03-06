@@ -13,6 +13,7 @@ module Praha.Extra
   , unlessM
   , tshow
   , guarded
+  , KeyValue(..)
   )
 where
   import Prelude
@@ -44,6 +45,19 @@ where
   --
   guarded :: (Alternative f) => (a -> Bool) -> a -> f a
   guarded p x = if p x then pure x else empty
+
+
+  -- |
+  -- A key-value pair.
+  --
+  class KeyValue kv k v | kv -> k v where
+    (.=) :: k -> v -> kv
+    infixr 8 .=
+
+
+  instance KeyValue (a, b) a b where
+    k .= v = (k, v)
+    {-# INLINE (.=) #-}
 
 
 -- vim:set ft=haskell sw=2 ts=2 et:

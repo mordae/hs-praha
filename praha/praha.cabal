@@ -29,7 +29,7 @@ library
 
     hs-source-dirs:     lib
     default-language:   GHC2021
-    default-extensions: NoImplicitPrelude
+    default-extensions: NoImplicitPrelude FunctionalDependencies
     ghc-options:
         -Wall -Wcompat -Wincomplete-uni-patterns
         -Wincomplete-record-updates -Widentities -Wredundant-constraints
@@ -46,5 +46,4 @@ library
         text >=1.2,
         unliftio-core >=0.2,
         unordered-containers >=0.2,
-        vector >=0.12,
-        key-value
+        vector >=0.12

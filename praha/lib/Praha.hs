@@ -365,8 +365,7 @@ module Praha
   , (Control.DeepSeq.<$!!>)
 
     -- * @KeyValue@
-    -- | Re-exported from "Data.KeyValue":
-  , (Data.KeyValue..=)
+  , (Praha.Extra..=)
   )
 where
   import Praha.Types
@@ -385,7 +384,6 @@ where
   import qualified Data.Foldable
   import qualified Data.Function
   import qualified Data.Functor
-  import qualified Data.KeyValue
   import qualified Data.List
   import qualified Data.Maybe
   import qualified Data.Monoid

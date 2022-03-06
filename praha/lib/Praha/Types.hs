@@ -290,10 +290,9 @@ module Praha.Types
   , Control.DeepSeq.NFData
   , Control.DeepSeq.NFData1
 
-    -- * @key-value@
+    -- * Extra
     -- ** @KeyValue@
-    -- | Re-exported from "Data.KeyValue":
-  , Data.KeyValue.KeyValue
+  , Praha.Extra.KeyValue
   )
 where
   import qualified Control.Applicative
@@ -326,7 +325,6 @@ where
   import qualified Data.Int
   import qualified Data.IntMap.Strict
   import qualified Data.IntSet
-  import qualified Data.KeyValue
   import qualified Data.Kind
   import qualified Data.List.NonEmpty
   import qualified Data.Map.Strict
@@ -350,6 +348,7 @@ where
   import qualified GHC.Records
   import qualified GHC.Stack
   import qualified Numeric.Natural
+  import qualified Praha.Extra
   import qualified Prelude
   import qualified System.IO
   import qualified Text.Read
