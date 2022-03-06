@@ -86,11 +86,13 @@ where
     readParam "warning" = Just LogWarning
     readParam "error"   = Just LogError
     readParam _other    = Nothing
+    {-# INLINE readParam #-}
 
     showParam LogDebug   = "debug"
     showParam LogInfo    = "info"
     showParam LogWarning = "warning"
     showParam LogError   = "error"
+    {-# INLINE showParam #-}
 
 
   -- |
@@ -107,8 +109,13 @@ where
     {-# INLINE askLogger #-}
 
 
-  instance (MonadIO m) => MonadLogger (ReaderT LogFunc m) where
-    askLogger = ask
+  instance (MonadLogger m) => MonadLogger (ReaderT e m) where
+    askLogger = lift askLogger
+    {-# INLINE askLogger #-}
+
+  instance (MonadLogger m) => MonadLogger (StateT e m) where
+    askLogger = lift askLogger
+    {-# INLINE askLogger #-}
 
 
   type LogFunc = LogLevel -> LogStr -> LogStr -> IO ()
@@ -121,6 +128,7 @@ where
   logMessage l t s = do
     logger <- askLogger
     liftIO $ logger l t s
+  {-# INLINE logMessage #-}
 
 
   -- |
@@ -136,6 +144,7 @@ where
   --
   logDebug :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
   logDebug tag logStrings = logMessage LogDebug tag (mconcat logStrings)
+  {-# INLINE logDebug #-}
 
 
   -- |
@@ -143,6 +152,7 @@ where
   --
   logInfo :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
   logInfo tag logStrings = logMessage LogInfo tag (mconcat logStrings)
+  {-# INLINE logInfo #-}
 
 
   -- |
@@ -150,6 +160,7 @@ where
   --
   logWarning :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
   logWarning tag logStrings = logMessage LogWarning tag (mconcat logStrings)
+  {-# INLINE logWarning #-}
 
 
   -- |
@@ -157,6 +168,7 @@ where
   --
   logError :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
   logError tag logStrings = logMessage LogError tag (mconcat logStrings)
+  {-# INLINE logError #-}
 
 
   -- |
@@ -182,7 +194,8 @@ where
              )
 
   instance (MonadIO m) => MonadLogger (LoggerT m) where
-    askLogger = LoggerT askLogger
+    askLogger = LoggerT ask
+    {-# INLINE askLogger #-}
 
 
   -- |
@@ -190,6 +203,7 @@ where
   --
   runLoggerT :: LogFunc -> LoggerT m a -> m a
   runLoggerT logFunc LoggerT{reader} = runReaderT reader logFunc
+  {-# INLINE runLoggerT #-}
 
 
   -- |
@@ -210,6 +224,7 @@ where
     if level >= limit
        then logger $ mconcat [strLevel level, " (", tag, ") ", str, "\n"]
        else return ()
+  {-# INLINE simpleLogFunc #-}
 
 
   -- |
