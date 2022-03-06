@@ -34,6 +34,7 @@ library
         -Wunused-packages
 
     build-depends:
+        base >=4.13 && <5,
         postgresql-simple >=0.6,
         praha >=0.1 && <0.2,
         praha-logger >=0.1 && <0.2

@@ -32,6 +32,7 @@ library
         -Wunused-packages
 
     build-depends:
+        base >=4.13 && <5,
         fast-logger >=3.0,
         praha >=0.1 && <0.2,
         praha-config >=0.1 && <0.2
