@@ -63,7 +63,7 @@ where
                                   name varchar not null primary key,
                                   ts timestamptz not null default now()
                                 );
-                                reset all;
+                                reset client_min_messages;
                               |] (Only table)
 
         existing <- fmap fromOnly <$>
