@@ -366,6 +366,9 @@ module Praha
 
     -- * @KeyValue@
   , (Praha.Extra..=)
+
+    -- * Misc
+  , Debug.Trace.trace
   )
 where
   import Praha.Types
@@ -394,6 +397,7 @@ where
   import qualified Data.Traversable
   import qualified Data.Tuple
   import qualified Data.Word
+  import qualified Debug.Trace
   import qualified GHC.Exts
   import qualified GHC.Records
   import qualified Praha.Extra
