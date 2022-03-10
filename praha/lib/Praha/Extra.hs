@@ -13,10 +13,13 @@ module Praha.Extra
   , unlessM
   , tshow
   , guarded
+  , showTrace
   , KeyValue(..)
   )
 where
   import Prelude
+
+  import Debug.Trace
   import Control.Monad
   import Control.Applicative
   import Data.Text (Text, pack)
@@ -34,6 +37,7 @@ where
   {-# INLINE unlessM #-}
 
 
+  -- | Similar to 'show', but with 'Text'.
   tshow :: (Show a) => a -> Text
   tshow = pack . show
   {-# INLINE tshow #-}
@@ -45,6 +49,13 @@ where
   --
   guarded :: (Alternative f) => (a -> Bool) -> a -> f a
   guarded p x = if p x then pure x else empty
+
+
+  -- |
+  -- Similar to 'trace', but with a name and implicit 'Show'.
+  --
+  showTrace :: (Show a) => String -> a -> a
+  showTrace name val = trace ("TRACE: " <> name <> " = " <> show val) val
 
 
   -- |

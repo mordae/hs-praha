@@ -364,8 +364,9 @@ module Praha
   , (Control.DeepSeq.$!!)
   , (Control.DeepSeq.<$!!>)
 
-    -- * @KeyValue@
+    -- * Extra
   , (Praha.Extra..=)
+  , Praha.Extra.showTrace
 
     -- * Misc
   , Debug.Trace.trace
