@@ -204,7 +204,6 @@ module Praha
   , Control.Monad.replicateM_
   , Control.Monad.zipWithM
   , Control.Monad.zipWithM_
-  , Praha.Extra.guarded
 
     -- * @Monad@
     -- | Re-exported from "Control.Monad":
@@ -219,8 +218,6 @@ module Praha
   , (Control.Monad.<$!>)
   , Control.Monad.liftM
   , Control.Monad.liftM2
-  , Praha.Extra.whenM
-  , Praha.Extra.unlessM
   , Data.Foldable.mapM_
   , Data.Foldable.forM_
   , Data.Foldable.sequence_
@@ -301,6 +298,7 @@ module Praha
   , Prelude.error
   , Prelude.undefined
   , Prelude.asTypeOf
+  , Debug.Trace.trace
 
     -- * List
     -- | Re-exported from "Data.List":
@@ -342,9 +340,6 @@ module Praha
   , Control.Monad.State.modify
   , Control.Monad.State.gets
 
-    -- * @Text@
-  , Praha.Extra.tshow
-
     -- ** @ConvertibleStrings@
     -- | Re-exported from "Data.String.Conversions":
   , Data.String.Conversions.cs
@@ -367,9 +362,11 @@ module Praha
     -- * Extra
   , (Praha.Extra..=)
   , Praha.Extra.showTrace
-
-    -- * Misc
-  , Debug.Trace.trace
+  , Praha.Extra.tshow
+  , Praha.Extra.whenM
+  , Praha.Extra.unlessM
+  , Praha.Extra.guarded
+  , Praha.Extra.pass
   )
 where
   import Praha.Types

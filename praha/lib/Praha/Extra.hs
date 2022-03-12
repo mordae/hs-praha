@@ -13,6 +13,7 @@ module Praha.Extra
   , unlessM
   , tshow
   , guarded
+  , pass
   , showTrace
   , KeyValue(..)
   )
@@ -49,6 +50,11 @@ where
   --
   guarded :: (Alternative f) => (a -> Bool) -> a -> f a
   guarded p x = if p x then pure x else empty
+
+
+  -- | Alias for @pure ()@.
+  pass :: Applicative f => f ()
+  pass = pure ()
 
 
   -- |
