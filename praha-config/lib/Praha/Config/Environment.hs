@@ -232,7 +232,7 @@ where
   readFileToEnv :: (MonadIO m) => FilePath -> m ()
   readFileToEnv path = do
     contents <- liftIO $ readFile path
-    for_ (parse contents) \(k, v) -> setEnv k v
+    mapM_ (uncurry setEnv) (parse contents)
 
 
   -- |
@@ -243,7 +243,7 @@ where
   readFileToEnvDefault :: (MonadIO m) => FilePath -> m ()
   readFileToEnvDefault path = do
     contents <- liftIO $ readFile path
-    for_ (parse contents) \(k, v) -> setEnvDefault k v
+    mapM_ (uncurry setEnvDefault) (parse contents)
 
 
   parse :: String -> [(String, String)]
