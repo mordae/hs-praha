@@ -58,12 +58,10 @@ where
   migrate table migrations conn = do
     withRunInIO \runInIO -> do
       withTransaction conn do
-        _ <- execute conn [sql| set session client_min_messages = 'warning';
-                                create table if not exists ? (
+        _ <- execute conn [sql| create table if not exists ? (
                                   name varchar not null primary key,
                                   ts timestamptz not null default now()
                                 );
-                                reset client_min_messages;
                               |] (Only table)
 
         existing <- fmap fromOnly <$>
