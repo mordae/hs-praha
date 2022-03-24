@@ -51,11 +51,12 @@ where
   -- both the old and the new version of the application.
   --
   migrate :: (MonadUnliftIO m, MonadLogger m)
-          => QualifiedIdentifier
+          => LogStr
+          -> QualifiedIdentifier
           -> [(FilePath, ByteString)]
           -> Connection
           -> m ()
-  migrate table migrations conn = do
+  migrate logStr table migrations conn = do
     withRunInIO \runInIO -> do
       withTransaction conn do
         _ <- execute conn [sql| create table if not exists ? (
@@ -70,10 +71,12 @@ where
         for_ migrations \(name, migration) -> do
           if name `elem` existing
              then do
-               runInIO $ logDebug tag ["Skipping ", toLogStr name]
+               runInIO do
+                 logDebug tag [logStr, ": Skipping ", toLogStr name]
 
              else do
-               runInIO $ logInfo tag ["Running ", toLogStr name]
+               runInIO do
+                 logInfo tag [logStr, ": Running ", toLogStr name]
 
                _ <- execute conn "insert into ? (name) values (?)" (table, name)
                _ <- execute_ conn (Query migration)
