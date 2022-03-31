@@ -23,7 +23,7 @@ where
 
 
   -- | Tag for logging.
-  tag :: LogStr
+  tag :: LogBuilder
   tag = "praha-migrate"
 
 
@@ -50,8 +50,8 @@ where
   -- success won't leave the database in a state that is unusable with
   -- both the old and the new version of the application.
   --
-  migrate :: (MonadUnliftIO m, MonadLogger m)
-          => LogStr
+  migrate :: (MonadUnliftIO m)
+          => LogBuilder
           -> QualifiedIdentifier
           -> [(FilePath, ByteString)]
           -> Connection
@@ -72,11 +72,11 @@ where
           if name `elem` existing
              then do
                runInIO do
-                 logDebug tag [logStr, ": Skipping ", toLogStr name]
+                 logDebug tag [logStr, ": Skipping ", toLog name]
 
              else do
                runInIO do
-                 logInfo tag [logStr, ": Running ", toLogStr name]
+                 logInfo tag [logStr, ": Running ", toLog name]
 
                _ <- execute conn "insert into ? (name) values (?)" (table, name)
                _ <- execute_ conn (Query migration)

@@ -8,8 +8,8 @@ maintainer:         mordae@anilinux.org
 author:             Jan Hamal Dvořák
 homepage:           https://github.com/mordae/hs-praha#readme
 bug-reports:        https://github.com/mordae/hs-praha/issues
-synopsis:           Practical Monad Transformer for Logging
-description:        Practical class and a monad transformer for logging.
+synopsis:           Practical Logging Library
+description:        Practical Logging Library
 category:           System
 build-type:         Simple
 extra-source-files: README.md
@@ -24,7 +24,7 @@ library
     default-language:   GHC2021
     default-extensions:
         DefaultSignatures GeneralizedNewtypeDeriving NoImplicitPrelude
-        OverloadedStrings TypeFamilies
+        OverloadedStrings TypeFamilies BlockArguments
 
     ghc-options:
         -Wall -Wcompat -Wincomplete-uni-patterns
@@ -33,7 +33,7 @@ library
 
     build-depends:
         base >=4.13 && <5,
-        fast-logger >=3.0,
-        mtl >=2.0,
+        bytestring >=0.11 && <0.12,
         praha >=0.1 && <0.2,
-        praha-config >=0.1 && <0.2
+        praha-config >=0.1 && <0.2,
+        text >=1.2

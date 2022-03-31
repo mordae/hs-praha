@@ -7,66 +7,44 @@
 -- Stability   :  unstable
 -- Portability :  non-portable (ghc)
 --
--- This module provides the 'LoggerT' transformer and an associated
--- 'MonadLogger' class to help you integrate your custom monad transformer
--- stack with "System.Log.FastLogger".
+-- Won't output any messages below the severity specified by the @LOG_LEVEL@
+-- environment variable.
 --
--- To include it in your custom transformer stack:
---
--- @
--- newtype LoggingApp a
---   = LoggingApp
---     { stack :: 'LoggerT' IO a
---     }
---   deriving (Functor, Applicative, Monad, MonadIO, 'MonadLogger')
--- @
---
--- To use it afterwards:
---
--- @
--- countFrobs :: LoggingApp Int
--- countFrobs = do
---   nfrobs \<- length \<$\> listFrobs
---
---   if (0 == nfrobs)
---      then 'logWarning' [\"There are no frobs!\"]
---      else 'logInfo' [\"There are \", 'toLogStr' nfrobs, \" frobs.\"]
---
---   return nfrobs
--- @
---
--- To execute it with the rest of your stack:
---
--- @
--- 'withFastLogger' ('LogStderr' 'defaultBufSize') \\logger ->
---   let logFunc = 'simpleLogFunc' 'LogInfo' logger
---    in 'runLoggerT' logFunc loggingApp
--- @
+-- or updated by the 'setMinLogLevel'. Defaults to 'LogInfo'.
 --
 
 module Praha.Logger
-  ( LogLevel(..)
-  , MonadLogger(..)
-  , LogFunc
-  , logDebug
+  (
+    -- * Emitting Messages
+    logDebug
   , logInfo
   , logWarning
   , logError
-  , LoggerT
-  , runLoggerT
-  , simpleLogFunc
 
-    -- * @fast-logger@
-    -- | Re-exported from "System.Log.FastLogger":
-  , LogStr
-  , ToLogStr
-  , toLogStr
+    -- * Composing Messages
+  , ToLog(..)
+  , LogBuilder
+
+    -- * Changing Log Level
+  , setMinLogLevel
+  , LogLevel(..)
   )
 where
   import Praha
   import Praha.Config.Environment
 
-  import System.Log.FastLogger
+  import Data.ByteString.Builder
+  import Data.IORef
+  import System.IO (stderr)
+  import System.IO.Unsafe (unsafePerformIO)
+
+  import qualified Data.ByteString as BS
+  import qualified Data.ByteString.Lazy as LBS
+  import qualified Data.ByteString.Short as SBS
+  import qualified Data.Text as T
+  import qualified Data.Text.Encoding as T
+  import qualified Data.Text.Lazy as LT
+  import qualified Data.Text.Lazy.Encoding as LT
 
 
   -- |
@@ -96,54 +74,36 @@ where
     {-# INLINE showParam #-}
 
 
+  minLogLevel :: IORef LogLevel
+  minLogLevel = unsafePerformIO $ observeConfigIORef "LOG_LEVEL" LogInfo
+  {-# NOINLINE minLogLevel #-}
+
+
   -- |
-  -- Class for monads equipped with "System.Log.FastLogger".
+  -- Adjust the minimum log level below that the messages are not printed.
   --
-  class (MonadIO m) => MonadLogger m where
-    -- |
-    -- Return the logging function itself.
-    --
-    askLogger :: m LogFunc
-
-    default askLogger :: (MonadTrans t, MonadLogger n, m ~ t n) => m LogFunc
-    askLogger = lift askLogger
-    {-# INLINE askLogger #-}
-
-
-  instance (MonadLogger m) => MonadLogger (ReaderT e m) where
-    askLogger = lift askLogger
-    {-# INLINE askLogger #-}
-
-  instance (MonadLogger m) => MonadLogger (StateT e m) where
-    askLogger = lift askLogger
-    {-# INLINE askLogger #-}
-
-
-  type LogFunc = LogLevel -> LogStr -> LogStr -> IO ()
+  setMinLogLevel :: (MonadIO m) => LogLevel -> m ()
+  setMinLogLevel level = setConfig "LOG_LEVEL" level
 
 
   -- |
   -- Log a single message at given level.
   --
-  logMessage :: (MonadLogger m) => LogLevel -> LogStr -> LogStr -> m ()
+  logMessage :: (MonadIO m) => LogLevel -> Builder -> Builder -> m ()
   logMessage l t s = do
-    logger <- askLogger
-    liftIO $ logger l t s
+    liftIO do
+      minLevel <- readIORef minLogLevel
+      when (l >= minLevel) do
+        let builder = mconcat [fromLevel l, " (", t, ") ", s, "\n"]
+        hPutBuilder stderr builder
+
   {-# INLINE logMessage #-}
 
 
   -- |
   -- Log a debugging message.
   --
-  -- Example:
-  --
-  -- @
-  -- let tag = "frobnicator"
-  -- nfrobs <- frobnicateInt
-  -- logDebug tag ["Counter: ", toLogStr nfrobs]
-  -- @
-  --
-  logDebug :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
+  logDebug :: (MonadIO m) => Builder -> [Builder] -> m ()
   logDebug tag logStrings = logMessage LogDebug tag (mconcat logStrings)
   {-# INLINE logDebug #-}
 
@@ -151,7 +111,7 @@ where
   -- |
   -- Log an informative message.
   --
-  logInfo :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
+  logInfo :: (MonadIO m) => Builder -> [Builder] -> m ()
   logInfo tag logStrings = logMessage LogInfo tag (mconcat logStrings)
   {-# INLINE logInfo #-}
 
@@ -159,7 +119,7 @@ where
   -- |
   -- Log a warning message.
   --
-  logWarning :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
+  logWarning :: (MonadIO m) => Builder -> [Builder] -> m ()
   logWarning tag logStrings = logMessage LogWarning tag (mconcat logStrings)
   {-# INLINE logWarning #-}
 
@@ -167,76 +127,94 @@ where
   -- |
   -- Log an error message.
   --
-  logError :: (MonadLogger m) => LogStr -> [LogStr] -> m ()
+  logError :: (MonadIO m) => Builder -> [Builder] -> m ()
   logError tag logStrings = logMessage LogError tag (mconcat logStrings)
   {-# INLINE logError #-}
 
 
   -- |
-  -- The logger monad transformer, which adds logging capability to
-  -- the given monad. Makes use of 'ReaderT' under the wraps.
-  --
-  newtype LoggerT m a
-    = LoggerT
-      { reader         :: ReaderT LogFunc m a
-      }
-    deriving ( Functor
-             , Applicative
-             , Monad
-             , MonadFix
-             , MonadFail
-             , Contravariant
-             , MonadZip
-             , Alternative
-             , MonadPlus
-             , MonadIO
-             , MonadUnliftIO
-             , MonadTrans
-             )
-
-  instance (MonadIO m) => MonadLogger (LoggerT m) where
-    askLogger = LoggerT ask
-    {-# INLINE askLogger #-}
-
-
-  -- |
-  -- Run the logging monad transformer.
-  --
-  runLoggerT :: LogFunc -> LoggerT m a -> m a
-  runLoggerT logFunc LoggerT{reader} = runReaderT reader logFunc
-  {-# INLINE runLoggerT #-}
-
-
-  -- |
-  -- Creates simple log function that silences messages with
-  -- level lower than the given one and prefixes all messages
-  -- with their respective log levels.
-  --
-  -- Example:
-  --
-  -- @
-  -- 'withFastLogger' ('LogStderr' 'defaultBufSize') \logger ->
-  --   let logFunc = simpleLogFunc LogInfo logger
-  --    in runLoggerT logFunc yourLoggingAppM
-  -- @
-  --
-  simpleLogFunc :: LogLevel -> FastLogger -> LogFunc
-  simpleLogFunc limit logger level tag str = do
-    if level >= limit
-       then logger $ mconcat [strLevel level, " (", tag, ") ", str, "\n"]
-       else return ()
-  {-# INLINE simpleLogFunc #-}
-
-
-  -- |
   -- Log strings corresponding to the individual log levels.
-  -- Used by the 'simpleLogFunc'.
   --
-  strLevel :: LogLevel -> LogStr
-  strLevel LogDebug   = "D"
-  strLevel LogInfo    = "I"
-  strLevel LogWarning = "W"
-  strLevel LogError   = "E"
+  fromLevel :: LogLevel -> Builder
+  fromLevel LogDebug   = "D"
+  fromLevel LogInfo    = "I"
+  fromLevel LogWarning = "W"
+  fromLevel LogError   = "E"
+  {-# INLINE fromLevel #-}
+
+
+  type LogBuilder = Builder
+
+
+  -- |
+  -- To convert various types to 'Builder' to be passed as parameters to
+  -- the logging functions.
+  --
+  -- If you need more control about the value encoding, e.g. to print it in
+  -- hexadecimal, use "Data.ByteString.Builder" directly.
+  --
+  class ToLog a where
+    toLog :: a -> LogBuilder
+
+  instance ToLog Builder where
+    toLog = id
+
+  instance ToLog BS.ByteString where
+    toLog = byteString
+
+  instance ToLog LBS.ByteString where
+    toLog = lazyByteString
+
+  instance ToLog SBS.ShortByteString where
+    toLog = shortByteString
+
+  instance ToLog Char where
+    toLog = charUtf8
+
+  instance ToLog String where
+    toLog = stringUtf8
+
+  instance ToLog Int8 where
+    toLog = int8Dec
+
+  instance ToLog Int16 where
+    toLog = int16Dec
+
+  instance ToLog Int32 where
+    toLog = int32Dec
+
+  instance ToLog Int64 where
+    toLog = int64Dec
+
+  instance ToLog Int where
+    toLog = intDec
+
+  instance ToLog Integer where
+    toLog = integerDec
+
+  instance ToLog Word16 where
+    toLog = word16Dec
+
+  instance ToLog Word32 where
+    toLog = word32Dec
+
+  instance ToLog Word64 where
+    toLog = word64Dec
+
+  instance ToLog Word where
+    toLog = wordDec
+
+  instance ToLog Float where
+    toLog = floatDec
+
+  instance ToLog Double where
+    toLog = doubleDec
+
+  instance ToLog T.Text where
+    toLog = T.encodeUtf8Builder
+
+  instance ToLog LT.Text where
+    toLog = LT.encodeUtf8Builder
 
 
 -- vim:set ft=haskell sw=2 ts=2 et:

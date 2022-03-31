@@ -1,3 +1,3 @@
-# praha-logger: Practical Monad Transformer for Logging
+# praha-log: Practical logging library
 
-`MonadLogger` class and a `LoggerT` monad transformer for convenient use of the `fast-logger` infrastructure.
+Outputs to `stderr`, uses `Builder` from `bytestring`. Fast enough.
