@@ -29,6 +29,10 @@ module Praha.Config.Environment
   , setConfig
   , setConfigDefault
 
+    -- * Observing Changes
+  , observeConfig
+  , observeConfigIORef
+
     -- * Using Files
   , readFileToEnv
   , readFileToEnvDefault
@@ -36,14 +40,21 @@ module Praha.Config.Environment
 where
   import Praha
 
+  import UnliftIO
+  import UnliftIO.Concurrent
   import UnliftIO.Environment
-  import UnliftIO.Exception
 
   import System.IO.Error (userError)
   import System.IO (readFile)
+  import System.IO.Unsafe (unsafePerformIO)
 
   import Data.List (drop, span, isPrefixOf, lines, dropWhile, dropWhileEnd)
   import Data.Char (isSpace)
+
+
+  changelog :: Chan (String, String)
+  changelog = unsafePerformIO newChan
+  {-# NOINLINE changelog #-}
 
 
   -- |
@@ -205,7 +216,10 @@ where
   -- Set given parameter.
   --
   setConfig :: (MonadIO m, EnvParam a) => String -> a -> m ()
-  setConfig name value = setEnv name (showParam value)
+  setConfig name value = do
+    let text = showParam value
+    setEnv name text
+    writeChan changelog (name, text)
 
 
   -- |
@@ -220,8 +234,45 @@ where
     maybeValue <- lookupEnv name
 
     case maybeValue of
-      Nothing -> setEnv name value
+      Nothing -> setConfig name value
       Just _  -> return ()
+
+
+  -- |
+  -- Register a function to be called (in parallel) every time the
+  -- configuration changes through 'setConfig' or 'readFileToEnv' ans so on.
+  --
+  -- Obviously does not track environment changes done outside this module.
+  --
+  observeConfig :: (MonadUnliftIO m, EnvParam a) => String -> (Maybe a -> m ()) -> m ()
+  observeConfig name handler = do
+    withRunInIO \runInIO -> do
+      chan <- dupChan changelog
+      void $ forkIO do
+        forever do
+          (name', text) <- readChan chan
+          when (name' == name) do
+            runInIO $ handler (readParam text)
+
+
+  -- |
+  -- Creates an 'IORef' that updates itself automatically whenever the
+  -- configuration changes.
+  --
+  observeConfigIORef :: (MonadIO m, EnvParam a) => String -> a -> m (IORef a)
+  observeConfigIORef name dfl = do
+    liftIO do
+      chan  <- dupChan changelog
+      value <- getConfigDefault name dfl
+      ioref <- newIORef value
+
+      void $ forkIO do
+        forever do
+          (name', text) <- readChan chan
+          when (name' == name) do
+            writeIORef ioref (fromMaybe dfl $ readParam text)
+
+      return ioref
 
 
   -- |
